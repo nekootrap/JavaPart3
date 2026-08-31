@@ -39,4 +39,8 @@ public class StudentService {
                 .toList();
     }
 
+    public Collection<Student> findByAgeMM(int min, int max) {
+        return studentRepository.findByAgeBetween(min, max);
+    }
+
 }
