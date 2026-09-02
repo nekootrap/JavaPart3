@@ -39,4 +39,8 @@ public class FacultyService {
                 .filter(faculty -> Objects.equals(faculty.getColor(), color))
                 .toList();
     }
+
+    public Collection<Faculty> findByNameNC (String name, String color) {
+        return facultyRepository.findByNameContainingIgnoreCaseOrColorContainingIgnoreCase(name, color);
+    }
 }
