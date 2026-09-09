@@ -21,6 +21,8 @@ public class Faculty {
         this.color = color;
     }
 
+    public Faculty() {}
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
