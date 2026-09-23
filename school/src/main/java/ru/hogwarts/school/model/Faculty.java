@@ -1,9 +1,14 @@
 package ru.hogwarts.school.model;
 
+import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
@@ -69,6 +74,13 @@ public class Faculty {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Set<Student> getStudents() { 
+        return students; 
+    }
+    public void setStudents(Set<Student> students) { 
+        this.students = students; 
     }
 
     
