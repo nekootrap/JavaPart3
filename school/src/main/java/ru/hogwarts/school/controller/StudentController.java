@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -61,6 +63,18 @@ public class StudentController {
             return ResponseEntity.ok(studentService.findByAge(age));
         }
         return ResponseEntity.ok(Collections.emptyList());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Collection<Student>> findStudentsByMMAge(@RequestParam int min,
+                                                                    @RequestParam int max) {
+        return ResponseEntity.ok(studentService.findByAgeMM(min, max));
+    }
+
+    @GetMapping("/{id}/faculty")
+    public ResponseEntity<Faculty> getStudentFaculty(@PathVariable Long id) {
+        Student student = studentService.readStudent(id);
+        return ResponseEntity.ok(student.getFaculty());
     }
 
 }
