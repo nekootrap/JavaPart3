@@ -26,11 +26,7 @@ public class Faculty {
         this.color = color;
     }
 
-    @OneToMany(mappedBy = "faculty")
-    @JsonIgnore 
-    private Set<Student> students;
-
-    public Faculty() {}
+    public Faculty () {}
 
     @Override
     public boolean equals(Object o) {
