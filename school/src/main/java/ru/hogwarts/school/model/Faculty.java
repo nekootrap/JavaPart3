@@ -20,6 +20,10 @@ public class Faculty {
 
     private String name;
     private String color;
+
+    @OneToMany(mappedBy = "faculty")
+    @JsonIgnore
+    private Set<Student> students; 
     
     public Faculty(String name, String color) {
         this.name = name;

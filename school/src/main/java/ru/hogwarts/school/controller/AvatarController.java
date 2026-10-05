@@ -11,12 +11,15 @@ import ru.hogwarts.school.repository.AvatarRepository;
 import ru.hogwarts.school.service.AvatarService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/avatar")
 public class AvatarController {
+    private static final Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     private final AvatarService avatarService;
     private final AvatarRepository avatarRepository;
@@ -29,11 +32,13 @@ public class AvatarController {
     @GetMapping
     public Page<Avatar> getAllAvatars(@RequestParam int page, @RequestParam int size) {
         Pageable pageable = PageRequest.of(page, size);
+        logger.info("Returning list of avatars");
         return avatarRepository.findAll(pageable);
     }
 
     @PostMapping(value = "/upload/{studentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Avatar uploadAvatar(@PathVariable Long studentId, @RequestParam("file") MultipartFile file) throws IOException {
+        logger.info("Uploading avatar for student with id = {}", studentId);
         return avatarService.uploadAvatar(studentId, file);
     }
 
@@ -41,7 +46,8 @@ public class AvatarController {
     public ResponseEntity<byte[]> getAvatarFromDb(@PathVariable Long id) {
         Avatar avatar = avatarService.getAvatarFromDb(id)
                 .orElseThrow(() -> new RuntimeException("Avatar not found in DB"));
-        
+        logger.info("Returning avatar from DB with id = {}", id);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(avatar.getMediaType()))
                 .body(avatar.getData());
@@ -51,6 +57,7 @@ public class AvatarController {
     public ResponseEntity<byte[]> getAvatarFromFile(@PathVariable Long id) {
         Avatar avatar = avatarService.getAvatarFromFileSystem(id)
                 .orElseThrow(() -> new RuntimeException("Avatar not found in File System"));
+        logger.info("Returning avatar from File System with id = {}", id);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(avatar.getMediaType()))
