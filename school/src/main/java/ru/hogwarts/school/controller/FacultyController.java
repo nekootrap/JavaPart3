@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
+import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.Comparator;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/faculty")
 public class FacultyController {
     private final FacultyService facultyService;
+    private final FacultyRepository facultyRepository;
 
-    public FacultyController(FacultyService facultyService) {
+    public FacultyController(FacultyService facultyService, FacultyRepository facultyRepository) {
         this.facultyService = facultyService;
+        this.facultyRepository = facultyRepository;
     }
 
     @GetMapping("{id}")
@@ -77,5 +81,14 @@ public class FacultyController {
     public ResponseEntity<Set<Student>> getFacultyStudents(@PathVariable Long id) {
         Faculty faculty = facultyService.readFaculty(id);
         return ResponseEntity.ok(faculty.getStudents());
+    }
+
+    @GetMapping("/longestName")
+    public String getLongestFacultyName() {
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .distinct()
+                .max(Comparator.comparingInt(String::length))
+                .orElse("");
     }
 }
