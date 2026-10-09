@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -24,6 +26,8 @@ import ru.hogwarts.school.service.StudentService;
 @RestController
 @RequestMapping("/student")
 public class StudentController {
+    private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
+
     private final StudentService studentService;
      private final StudentRepository studentRepository;
 
@@ -34,21 +38,25 @@ public class StudentController {
 
     @GetMapping("/count")
     public long getCount() {
+        logger.info("Was invoked method for get count of students");
         return studentRepository.countAllStudents();
     }
 
     @GetMapping("/average-age")
     public double getAverageAge() {
+        logger.info("Was invoked method for get average age of students");
         return studentRepository.getAverageAge();
     }
 
     @GetMapping("/last-five")
     public List<Student> getLastFive() {
+        logger.info("Was invoked method for get last five students");
         return studentRepository.findLastFiveStudents();
     }
 
     @GetMapping("{id}")
     public ResponseEntity<Student> getStudentInfo(@PathVariable Long id) {
+        logger.info("Was invoked method for get student info");
         Student student = studentService.readStudent(id);
         if (student == null) {
             return ResponseEntity.notFound().build();
@@ -58,11 +66,13 @@ public class StudentController {
 
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
+        logger.info("Was invoked method for create student");
         return studentService.createStudent(student);
     }
 
     @PutMapping
     public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
+        logger.info("Was invoked method for update student");
         Student foundStudent = studentService.updateStudent(student);
         if (foundStudent == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -72,6 +82,7 @@ public class StudentController {
 
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+        logger.error("There is not student with id = " + id);
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
@@ -79,6 +90,7 @@ public class StudentController {
     @GetMapping
     public ResponseEntity<Collection<Student>> findStudents(@RequestParam(required = false) int age) {
         if (age > 0) {
+            logger.debug("Received request to find student by age: {}", age);
             return ResponseEntity.ok(studentService.findByAge(age));
         }
         return ResponseEntity.ok(Collections.emptyList());
@@ -87,11 +99,13 @@ public class StudentController {
     @GetMapping("/search")
     public ResponseEntity<Collection<Student>> findStudentsByMMAge(@RequestParam int min,
                                                                     @RequestParam int max) {
+        logger.debug("Received request to find students by age range: {} - {}", min, max);
         return ResponseEntity.ok(studentService.findByAgeMM(min, max));
     }
 
     @GetMapping("/{id}/faculty")
     public ResponseEntity<Faculty> getStudentFaculty(@PathVariable Long id) {
+        logger.info("Was invoked method for get faculty of student with id = " + id);
         Student student = studentService.readStudent(id);
         return ResponseEntity.ok(student.getFaculty());
     }
