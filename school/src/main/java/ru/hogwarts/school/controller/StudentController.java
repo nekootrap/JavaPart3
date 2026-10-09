@@ -110,4 +110,48 @@ public class StudentController {
         return ResponseEntity.ok(student.getFaculty());
     }
 
+    @GetMapping("/students/print-parallel")
+    public ResponseEntity<String> printParallel() {
+        List<Student> students = studentRepository.findAll();
+
+        System.out.println("Main Thread: " + students.get(0).getName());
+        System.out.println("Main Thread: " + students.get(1).getName());
+
+        new Thread(() -> {
+            System.out.println("Thread-1: " + students.get(2).getName());
+            System.out.println("Thread-1: " + students.get(3).getName());
+        }).start();
+
+        new Thread(() -> {
+            System.out.println("Thread-2: " + students.get(4).getName());
+            System.out.println("Thread-2: " + students.get(5).getName());
+        }).start();
+
+        return ResponseEntity.ok("Потоки запущены");
+    }
+
+    private synchronized void printStudentName(String name) {
+        System.out.println(Thread.currentThread().getName() + ": " + name);
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public ResponseEntity<String> printSynchronized() {
+        List<Student> students = studentRepository.findAll();
+
+        printStudentName(students.get(0).getName());
+        printStudentName(students.get(1).getName());
+
+        new Thread(() -> {
+            printStudentName(students.get(2).getName());
+            printStudentName(students.get(3).getName());
+        }).start();
+
+        new Thread(() -> {
+            printStudentName(students.get(4).getName());
+            printStudentName(students.get(5).getName());
+        }).start();
+
+        return ResponseEntity.ok("Синхронизированные потоки запущены");
+    }
+
 }
