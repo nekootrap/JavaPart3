@@ -3,6 +3,9 @@ package ru.hogwarts.school.controller;
 import java.util.Collections;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,12 +43,6 @@ public class StudentController {
     public long getCount() {
         logger.info("Was invoked method for get count of students");
         return studentRepository.countAllStudents();
-    }
-
-    @GetMapping("/average-age")
-    public double getAverageAge() {
-        logger.info("Was invoked method for get average age of students");
-        return studentRepository.getAverageAge();
     }
 
     @GetMapping("/last-five")
@@ -109,5 +106,35 @@ public class StudentController {
         Student student = studentService.readStudent(id);
         return ResponseEntity.ok(student.getFaculty());
     }
+
+    @GetMapping("/namesA")
+    public List<String> getNamesStartingWithA() {
+        return studentRepository.findAll().stream()
+                .map(Student :: getName)
+                .filter(Objects::nonNull)
+                .map(String :: toUpperCase)
+                .filter(name -> name.startsWith("A"))
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/averageAge")
+    public double getAverageAge() {
+        return studentRepository.findAll().stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0);
+    }
+
+    // доп
+    @GetMapping("/parallelSum")
+    public int getParallelSumAlt() {
+        return Stream.iterate(1, a -> a + 1)
+                .limit(1_000_000)
+                .parallel()
+                .reduce(0, Integer::sum);
+    }
+
+
 
 }
